@@ -13,11 +13,11 @@ const statusText = document.getElementById("status");
 
 let recognition;
 let finalTranscript = "";
+let lastFinalIndex = 0;
 
 if (!SpeechRecognition) {
   startBtn.disabled = true;
-  statusText.textContent =
-    "Speech recognition is not supported in this browser.";
+  statusText.textContent = "Speech recognition is not supported.";
 } else {
   recognition = new SpeechRecognition();
   recognition.continuous = true;
@@ -25,6 +25,8 @@ if (!SpeechRecognition) {
 
   recognition.onstart = () => {
     finalTranscript = transcriptBox.value;
+    lastFinalIndex = 0;
+
     startBtn.disabled = true;
     stopBtn.disabled = false;
     statusText.textContent = "Listening...";
@@ -33,14 +35,17 @@ if (!SpeechRecognition) {
   recognition.onresult = (event) => {
     let interimTranscript = "";
 
-    for (let i = 0; i < event.results.length; i++) {
-      const text = event.results[i][0].transcript;
+    for (
+      let i = lastFinalIndex;
+      i < event.results.length;
+      i++
+    ) {
+      const result = event.results[i];
+      const text = result[0].transcript;
 
-      if (event.results[i].isFinal) {
-        if (!event.results[i].processed) {
-          finalTranscript += text + " ";
-          event.results[i].processed = true;
-        }
+      if (result.isFinal) {
+        finalTranscript += text + " ";
+        lastFinalIndex = i + 1;
       } else {
         interimTranscript += text;
       }
@@ -51,7 +56,7 @@ if (!SpeechRecognition) {
   };
 
   recognition.onerror = (event) => {
-    statusText.textContent = "Error: " + event.error;
+    statusText.textContent = "Recognition error: " + event.error;
   };
 
   recognition.onend = () => {
@@ -62,6 +67,7 @@ if (!SpeechRecognition) {
 
   startBtn.onclick = () => {
     recognition.lang = languageSelect.value;
+
     try {
       recognition.start();
     } catch (error) {
@@ -73,20 +79,26 @@ if (!SpeechRecognition) {
 }
 
 copyBtn.onclick = async () => {
-  await navigator.clipboard.writeText(transcriptBox.value);
-  statusText.textContent = "Text copied!";
+  try {
+    await navigator.clipboard.writeText(transcriptBox.value);
+    statusText.textContent = "Text copied!";
+  } catch {
+    statusText.textContent = "Please select and copy the text manually.";
+  }
 };
 
 downloadBtn.onclick = () => {
   const blob = new Blob([transcriptBox.value], {
-    type: "text/plain"
+    type: "text/plain;charset=utf-8"
   });
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+
   link.href = url;
   link.download = "my-transcript.txt";
   link.click();
+
   URL.revokeObjectURL(url);
 };
 
@@ -96,8 +108,7 @@ clearBtn.onclick = () => {
   }
 
   finalTranscript = "";
+  lastFinalIndex = 0;
   transcriptBox.value = "";
   statusText.textContent = "Transcript cleared.";
 };
-
-
