@@ -1,4 +1,6 @@
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
@@ -14,81 +16,88 @@ let finalTranscript = "";
 
 if (!SpeechRecognition) {
   startBtn.disabled = true;
-  statusText.textContent = "Speech recognition is not supported in this browser. Try an up-to-date version of Google Chrome.";
+  statusText.textContent =
+    "Speech recognition is not supported in this browser.";
 } else {
   recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = true;
 
   recognition.onstart = () => {
-    statusText.textContent = "Listening… Speak clearly.";
+    finalTranscript = transcriptBox.value;
     startBtn.disabled = true;
     stopBtn.disabled = false;
+    statusText.textContent = "Listening...";
   };
 
   recognition.onresult = (event) => {
     let interimTranscript = "";
-    for (let i = event.resultIndex; i < event.results.length; i++) {
+
+    for (let i = 0; i < event.results.length; i++) {
       const text = event.results[i][0].transcript;
+
       if (event.results[i].isFinal) {
-        finalTranscript += text + " ";
+        if (!event.results[i].processed) {
+          finalTranscript += text + " ";
+          event.results[i].processed = true;
+        }
       } else {
         interimTranscript += text;
       }
     }
-    transcriptBox.value = finalTranscript + interimTranscript;
+
+    transcriptBox.value =
+      finalTranscript + interimTranscript;
   };
 
   recognition.onerror = (event) => {
-    statusText.textContent = "Recognition issue: " + event.error + ". Check microphone permission and connection.";
+    statusText.textContent = "Error: " + event.error;
   };
 
   recognition.onend = () => {
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    if (statusText.textContent.startsWith("Listening")) {
-      statusText.textContent = "Recording stopped. You can start again.";
-    }
+    statusText.textContent = "Recording stopped.";
   };
 
-  startBtn.addEventListener("click", () => {
-    finalTranscript = transcriptBox.value.trim();
-    if (finalTranscript) finalTranscript += " ";
+  startBtn.onclick = () => {
     recognition.lang = languageSelect.value;
     try {
       recognition.start();
     } catch (error) {
-      statusText.textContent = "Could not start. Please wait a moment and try again.";
+      statusText.textContent = "Please wait and try again.";
     }
-  });
+  };
 
-  stopBtn.addEventListener("click", () => recognition.stop());
+  stopBtn.onclick = () => recognition.stop();
 }
 
-copyBtn.addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(transcriptBox.value);
-    statusText.textContent = "Transcript copied.";
-  } catch {
-    transcriptBox.select();
-    statusText.textContent = "Select the text and copy it using your phone's Copy option.";
-  }
-});
+copyBtn.onclick = async () => {
+  await navigator.clipboard.writeText(transcriptBox.value);
+  statusText.textContent = "Text copied!";
+};
 
-downloadBtn.addEventListener("click", () => {
-  const blob = new Blob([transcriptBox.value], { type: "text/plain;charset=utf-8" });
+downloadBtn.onclick = () => {
+  const blob = new Blob([transcriptBox.value], {
+    type: "text/plain"
+  });
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = "my-transcript.txt";
   link.click();
   URL.revokeObjectURL(url);
-  statusText.textContent = "Transcript download started.";
-});
+};
 
-clearBtn.addEventListener("click", () => {
-  if (recognition && stopBtn.disabled === false) recognition.stop();
+clearBtn.onclick = () => {
+  if (recognition && !stopBtn.disabled) {
+    recognition.stop();
+  }
+
   finalTranscript = "";
   transcriptBox.value = "";
   statusText.textContent = "Transcript cleared.";
-});
+};
+
+
