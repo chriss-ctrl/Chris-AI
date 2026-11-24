@@ -1,0 +1,8 @@
+{
+  "name": "chris-AI Speech to Text",
+  "short_name": "chris-AI",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6fc",
+  "theme_color": "#101b36"
+}

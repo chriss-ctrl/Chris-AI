@@ -1,50 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A simple browser-based speech-to-text transcription tool.">
-  <title>chris250</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <main class="app">
-    <header>
-      <p class="eyebrow">YOUR SPEECH, IN WRITING</p>
-      <h1>chris250</h1>
-      <p class="intro">Speak into your microphone and turn your words into text.</p>
-    </header>
-
-    <section class="panel">
-      <label for="language">Recognition language</label>
-      <select id="language">
-        <option value="en-US">English (United States)</option>
-        <option value="en-GB">English (United Kingdom)</option>
-        <option value="fr-FR">French</option>
-        <option value="rw-RW">Kinyarwanda (browser support may vary)</option>
-      </select>
-
-      <div class="controls">
-        <button id="startBtn" class="primary">Start recording</button>
-        <button id="stopBtn" class="secondary" disabled>Stop</button>
-      </div>
-      <p id="status" class="status" role="status">Ready. Press Start recording to begin.</p>
-
-      <label for="transcript">Your transcript</label>
-      <textarea id="transcript" placeholder="Your recognized words will appear here. You can also edit this text." rows="11"></textarea>
-
-      <div class="controls bottom-controls">
-        <button id="copyBtn" class="secondary">Copy text</button>
-        <button id="downloadBtn" class="secondary">Download .txt</button>
-        <button id="clearBtn" class="danger">Clear</button>
-      </div>
-    </section>
-
-    <footer>
-      <p>Privacy note: speech recognition is provided by your browser. Depending on the browser, audio may be processed by an online service. Do not dictate private or sensitive information.</p>
-      <p>Built as a beginner project by Hhak.</p>
-    </footer>
-  </main>
-  <script src="script.js"></script>
-</body>
-</html>
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b36"><meta name="description" content="chris-AI speech to text">
+<title>chris-AI | Speech to Text</title><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css">
+</head><body><main class="shell">
+<header><a class="brand" href="./"><b>C</b> chris-AI</a><span class="tag">SPEECH TO TEXT</span></header>
+<section class="hero"><p>YOUR WORDS. CLEARLY CAPTURED.</p><h1>Turn speech into <em>text.</em></h1><div>Record live or upload an audio file and create an editable transcript.</div></section>
+<section class="workspace">
+<nav><button id="liveTab" class="active">● Live recording</button><button id="uploadTab">↑ Audio upload</button></nav>
+<section id="livePanel" class="panel"><h2>Live transcription</h2><p>Use your device microphone.</p>
+<label for="liveLanguage">Spoken language</label><select id="liveLanguage">
+<option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="fr-FR">French</option><option value="sw-KE">Swahili (Kenya)</option><option value="rw-RW">Kinyarwanda (browser support varies)</option></select>
+<div class="buttons"><button id="startBtn" class="primary">Start recording</button><button id="stopBtn" disabled>Stop</button></div><p id="liveStatus" class="status">Ready when you are.</p></section>
+<section id="uploadPanel" class="panel hidden"><h2>Transcribe an audio file</h2><p>Choose a recording saved on your device.</p>
+<label class="upload" for="audioFile">Choose audio file <input id="audioFile" type="file" accept="audio/*"></label><p id="fileName" class="status">No file selected. Maximum size: 25 MB.</p><button id="transcribeBtn" class="primary" disabled>Transcribe audio</button><p id="uploadStatus" class="status">Audio uploads need the backend service to be deployed.</p></section>
+<section class="panel"><h2>Your transcript <small id="wordCount">0 words</small></h2><p>Edit the recognized text below.</p><textarea id="transcript" rows="9" placeholder="Your transcript will appear here..."></textarea>
+<div class="buttons"><button id="copyBtn">Copy text</button><button id="downloadBtn">Download .txt</button><button id="clearBtn">Clear</button></div></section></section>
+<footer>Live recognition depends on browser support. Uploaded audio is sent to the configured transcription server. Avoid sensitive recordings.</footer>
+</main><script src="app.js"></script></body></html>
